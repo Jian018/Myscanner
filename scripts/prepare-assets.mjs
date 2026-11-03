@@ -1,0 +1,16 @@
+import { mkdir, copyFile, cp } from 'node:fs/promises';
+import { createRequire } from 'node:module';
+import path from 'node:path';
+const require = createRequire(import.meta.url);
+const root = path.resolve('public/vendor');
+await mkdir(root, { recursive: true });
+const pkg = (name) => path.dirname(require.resolve(`${name}/package.json`));
+await copyFile(path.join(pkg('@techstark/opencv-js'), 'dist/opencv.js'), path.join(root, 'opencv.js'));
+await copyFile(path.join(pkg('tesseract.js'), 'dist/worker.min.js'), path.join(root, 'tesseract-worker.min.js'));
+await cp(pkg('tesseract.js-core'), path.join(root, 'tesseract-core'), { recursive: true });
+await copyFile(path.join(pkg('pdfjs-dist'), 'build/pdf.worker.min.mjs'), path.join(root, 'pdf.worker.min.mjs'));
+await cp(path.join(pkg('pdfjs-dist'), 'cmaps'), path.join(root, 'cmaps'), { recursive: true });
+await cp(path.join(pkg('pdfjs-dist'), 'standard_fonts'), path.join(root, 'standard_fonts'), { recursive: true });
+await cp(path.join(pkg('pdfjs-dist'), 'wasm'), path.join(root, 'pdfjs-wasm'), { recursive: true });
+await cp(path.join(pkg('pdfjs-dist'), 'iccs'), path.join(root, 'iccs'), { recursive: true });
+console.log('Browser runtimes copied to public/vendor');
